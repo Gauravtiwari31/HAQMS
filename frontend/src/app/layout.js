@@ -1,11 +1,12 @@
-import { Inter } from 'next/font/google';
+import { Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 
-const inter = Inter({
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-space-grotesk',
   display: 'swap',
+  weight: ['300', '400', '500', '600', '700'],
 });
 
 export const metadata = {
@@ -19,9 +20,9 @@ export default function RootLayout({ children }) {
     <html lang="en" className="h-full dark">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#080E1A" />
+        <meta name="theme-color" content="#020507" />
       </head>
-      <body className={`${inter.variable} font-sans min-h-screen gradient-bg antialiased`}>
+      <body className={`${spaceGrotesk.variable} font-sans min-h-screen gradient-bg antialiased`}>
         <AuthProvider>
           {children}
         </AuthProvider>

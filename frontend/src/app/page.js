@@ -55,10 +55,10 @@ const roles = [
 ];
 
 const colorMap = {
-  teal: { bg: 'rgba(0,212,170,0.08)', border: 'rgba(0,212,170,0.2)', text: 'var(--color-teal-400)' },
-  violet: { bg: 'rgba(139,92,246,0.08)', border: 'rgba(139,92,246,0.2)', text: 'var(--color-violet-400)' },
-  amber: { bg: 'rgba(251,191,36,0.08)', border: 'rgba(251,191,36,0.2)', text: 'var(--color-amber-400)' },
-  emerald: { bg: 'rgba(16,185,129,0.08)', border: 'rgba(16,185,129,0.2)', text: 'var(--color-emerald-400)' },
+  teal: { bg: 'rgba(0,212,170,0.07)', border: 'rgba(0,212,170,0.15)', text: 'var(--color-teal-400)' },
+  violet: { bg: 'rgba(139,92,246,0.07)', border: 'rgba(139,92,246,0.15)', text: 'var(--color-violet-400)' },
+  amber: { bg: 'rgba(251,191,36,0.07)', border: 'rgba(251,191,36,0.15)', text: 'var(--color-amber-400)' },
+  emerald: { bg: 'rgba(16,185,129,0.07)', border: 'rgba(16,185,129,0.15)', text: 'var(--color-emerald-400)' },
 };
 
 export default function Home() {
@@ -70,8 +70,8 @@ export default function Home() {
           position: 'fixed',
           inset: 0,
           backgroundImage: `
-            linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)
+            linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)
           `,
           backgroundSize: '48px 48px',
           pointerEvents: 'none',
@@ -91,7 +91,7 @@ export default function Home() {
                 display: 'flex',
               }}
             >
-              <Activity className="h-5 w-5" style={{ color: '#080E1A' }} />
+              <Activity className="h-5 w-5" style={{ color: '#020507' }} />
             </div>
             <span style={{ fontWeight: 800, fontSize: '1.25rem', letterSpacing: '-0.02em' }}>
               <span className="gradient-text-teal">HAQMS</span>
@@ -121,8 +121,8 @@ export default function Home() {
           <div
             className="inline-flex items-center gap-2 mb-8"
             style={{
-              background: 'rgba(0,212,170,0.08)',
-              border: '1px solid rgba(0,212,170,0.2)',
+              background: 'rgba(0,212,170,0.07)',
+              border: '1px solid rgba(0,212,170,0.15)',
               borderRadius: '100px',
               padding: '0.375rem 1rem',
               fontSize: '0.75rem',
@@ -209,7 +209,7 @@ export default function Home() {
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = c.border;
                     e.currentTarget.style.transform = 'translateY(-4px)';
-                    e.currentTarget.style.boxShadow = `0 12px 40px rgba(0,0,0,0.4)`;
+                    e.currentTarget.style.boxShadow = `0 12px 40px rgba(0,0,0,0.5)`;
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = 'var(--color-border)';
@@ -249,7 +249,7 @@ export default function Home() {
             style={{
               borderRadius: 'var(--radius-xl)',
               padding: '3rem',
-              background: 'linear-gradient(135deg, rgba(13,21,38,0.9), rgba(17,28,53,0.9))',
+              background: 'linear-gradient(135deg, rgba(6,12,18,0.95), rgba(10,18,25,0.95))',
             }}
           >
             <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
@@ -280,7 +280,7 @@ export default function Home() {
                 <div
                   key={r.role}
                   style={{
-                    background: 'rgba(8,14,26,0.5)',
+                    background: 'rgba(2,5,7,0.6)',
                     border: '1px solid var(--color-border)',
                     borderRadius: 'var(--radius-lg)',
                     padding: '1.5rem',
@@ -292,8 +292,8 @@ export default function Home() {
                       width: '3rem',
                       height: '3rem',
                       borderRadius: '50%',
-                      background: `${r.color}15`,
-                      border: `1px solid ${r.color}30`,
+                      background: `${r.color}12`,
+                      border: `1px solid ${r.color}25`,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -313,7 +313,7 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Quick access */}
+            {/* Access CTA — assessment environment notice removed */}
             <div
               style={{
                 marginTop: '2rem',
@@ -321,19 +321,9 @@ export default function Home() {
                 borderTop: '1px solid var(--color-border)',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '1rem',
+                justifyContent: 'flex-end',
               }}
             >
-              <div>
-                <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginBottom: '0.25rem' }}>
-                  Demo credentials available
-                </p>
-                <p style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
-                  All accounts: <code style={{ fontFamily: 'monospace', color: 'var(--color-teal-400)' }}>password123</code>
-                </p>
-              </div>
               <Link href="/login">
                 <button className="btn-primary" style={{ padding: '0.625rem 1.25rem' }}>
                   <Calendar className="h-4 w-4" />

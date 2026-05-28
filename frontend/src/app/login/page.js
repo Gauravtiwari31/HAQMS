@@ -12,6 +12,7 @@ const DEMO_ACCOUNTS = [
 ];
 
 export default function Login() {
+  // FIX: Destructure authRestored so we know when localStorage check is done
   const { login, error: authError, loading, clearError } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -65,7 +66,7 @@ export default function Login() {
         style={{
           width: '40%',
           flexShrink: 0,
-          background: 'linear-gradient(160deg, rgba(0,180,148,0.15) 0%, rgba(8,14,26,0.95) 40%, rgba(124,58,237,0.08) 100%)',
+          background: 'linear-gradient(160deg, rgba(0,180,148,0.1) 0%, rgba(2,5,7,0.98) 40%, rgba(124,58,237,0.05) 100%)',
           borderRight: '1px solid var(--color-border)',
           position: 'relative',
           overflow: 'hidden',
@@ -77,8 +78,8 @@ export default function Login() {
             position: 'absolute',
             inset: 0,
             backgroundImage: `
-              linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)
+              linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px)
             `,
             backgroundSize: '40px 40px',
             pointerEvents: 'none',
@@ -96,7 +97,7 @@ export default function Login() {
                 display: 'flex',
               }}
             >
-              <Activity className="h-6 w-6" style={{ color: '#080E1A' }} />
+              <Activity className="h-6 w-6" style={{ color: '#020507' }} />
             </div>
             <span style={{ fontSize: '1.5rem', fontWeight: 900, letterSpacing: '-0.02em' }}>
               <span className="gradient-text-teal">HAQMS</span>
@@ -142,8 +143,8 @@ export default function Login() {
               <div
                 key={s.label}
                 style={{
-                  background: 'rgba(0,212,170,0.05)',
-                  border: '1px solid rgba(0,212,170,0.1)',
+                  background: 'rgba(0,212,170,0.04)',
+                  border: '1px solid rgba(0,212,170,0.08)',
                   borderRadius: 'var(--radius-md)',
                   padding: '0.75rem 1rem',
                 }}
@@ -161,7 +162,7 @@ export default function Login() {
 
         {/* Footer */}
         <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', position: 'relative' }}>
-          v2.0.0 — All data is for demonstration purposes.
+          v2.0.0 — Hospital Appointment & Queue Management System
         </p>
       </div>
 
@@ -180,7 +181,7 @@ export default function Login() {
               display: 'flex',
             }}
           >
-            <Activity className="h-5 w-5" style={{ color: '#080E1A' }} />
+            <Activity className="h-5 w-5" style={{ color: '#020507' }} />
           </div>
           <span style={{ fontSize: '1.25rem', fontWeight: 900 }}>
             <span className="gradient-text-teal">HAQMS</span>
@@ -231,6 +232,7 @@ export default function Login() {
                   placeholder="you@hospital.com"
                   className="form-input"
                   style={{ paddingLeft: '2.25rem' }}
+                  disabled={loading}
                 />
               </div>
             </div>
@@ -259,6 +261,7 @@ export default function Login() {
                   placeholder="••••••••"
                   className="form-input"
                   style={{ paddingLeft: '2.25rem', paddingRight: '2.75rem' }}
+                  disabled={loading}
                 />
                 <button
                   type="button"
@@ -282,7 +285,7 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Submit */}
+            {/* Submit — FIX: only disabled when actively loading a login request */}
             <button
               type="submit"
               disabled={loading}
@@ -296,9 +299,10 @@ export default function Login() {
                       width: '14px',
                       height: '14px',
                       border: '2px solid rgba(0,0,0,0.3)',
-                      borderTopColor: '#080E1A',
+                      borderTopColor: '#020507',
                       borderRadius: '50%',
                       animation: 'spin 0.7s linear infinite',
+                      flexShrink: 0,
                     }}
                   />
                   Signing in...
@@ -324,7 +328,7 @@ export default function Login() {
             >
               <div style={{ flex: 1, height: '1px', background: 'var(--color-border)' }} />
               <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>
-                Demo Accounts
+                Quick Access
               </span>
               <div style={{ flex: 1, height: '1px', background: 'var(--color-border)' }} />
             </div>
@@ -335,6 +339,7 @@ export default function Login() {
                   key={acc.role}
                   type="button"
                   onClick={() => fillDemo(acc)}
+                  disabled={loading}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -344,14 +349,17 @@ export default function Login() {
                     border: '1px solid var(--color-border)',
                     borderRadius: 'var(--radius-md)',
                     padding: '0.625rem 0.875rem',
-                    cursor: 'pointer',
+                    cursor: loading ? 'not-allowed' : 'pointer',
                     transition: 'all 0.15s ease',
                     textAlign: 'left',
                     width: '100%',
+                    opacity: loading ? 0.5 : 1,
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(0,212,170,0.25)';
-                    e.currentTarget.style.background = 'var(--color-surface-2)';
+                    if (!loading) {
+                      e.currentTarget.style.borderColor = 'rgba(0,212,170,0.2)';
+                      e.currentTarget.style.background = 'var(--color-surface-2)';
+                    }
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = 'var(--color-border)';

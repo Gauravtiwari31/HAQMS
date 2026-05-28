@@ -5,13 +5,15 @@ import { useRouter } from 'next/navigation';
 
 const AuthContext = createContext();
 
-// FIX: Use environment variable instead of hardcoded URL
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // FIX: Start loading as false — the localStorage restore is synchronous-ish
+  // and we don't want to block the login button on page load
+  const [loading, setLoading] = useState(false);
+  const [authRestored, setAuthRestored] = useState(false);
   const [error, setError] = useState(null);
   const router = useRouter();
 
@@ -28,11 +30,10 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (e) {
       console.error('Failed to restore auth state:', e);
-      // Clear corrupted data
       localStorage.removeItem('haqms_token');
       localStorage.removeItem('haqms_user');
     } finally {
-      setLoading(false);
+      setAuthRestored(true);
     }
   }, []);
 
@@ -40,22 +41,37 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+      let response;
+      try {
+        response = await fetch(`${API_BASE_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+      } catch (networkErr) {
+        // FIX: Provide a clear message when the backend is unreachable
+        throw new Error('Cannot reach the server. Please make sure the backend is running on port 5000.');
+      }
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error('Unexpected server response. Please try again.');
+      }
 
       if (!response.ok) {
         throw new Error(data.error || 'Authentication failed');
       }
 
+      // FIX: Guard against unexpected response shape
+      if (!data.data || !data.data.token || !data.data.user) {
+        throw new Error('Invalid response from server. Please try again.');
+      }
+
       const receivedToken = data.data.token;
       const receivedUser = data.data.user;
 
-      // Store in localStorage (note: HttpOnly cookies would be more secure for production)
       localStorage.setItem('haqms_token', receivedToken);
       localStorage.setItem('haqms_user', JSON.stringify(receivedUser));
 
@@ -76,19 +92,28 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password, role }),
-      });
+      let response;
+      try {
+        response = await fetch(`${API_BASE_URL}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password, role }),
+        });
+      } catch {
+        throw new Error('Cannot reach the server. Please make sure the backend is running.');
+      }
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error('Unexpected server response. Please try again.');
+      }
 
       if (!response.ok) {
         throw new Error(data.error || 'Registration failed');
       }
 
-      // Auto-login after registration
       return login(email, password);
     } catch (err) {
       setError(err.message);
@@ -115,6 +140,7 @@ export const AuthProvider = ({ children }) => {
         user,
         token,
         loading,
+        authRestored,
         error,
         login,
         register,
