@@ -108,7 +108,10 @@ router.post('/login', async (req, res) => {
   } catch (error) {
     console.error('[LOGIN ERROR]:', error.message);
     // FIX: Never leak stack traces to client
-    res.status(500).json({ error: 'Login failed. Please try again.' });
+   res.status(500).json({
+  error: error.message,
+  stack: error.stack
+});
   }
 });
 
