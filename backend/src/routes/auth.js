@@ -75,7 +75,8 @@ router.post('/login', async (req, res) => {
     });
 
     // FIX: Always run bcrypt compare to prevent timing attacks (constant-time comparison)
-    const dummyHash = '$2a$12$dummyhashforpreventingtimingattack.thatdoesntmatch';
+    const dummyHash =
+  '$2a$12$C6UzMDM.H6dfI/f/IKcEeO8W1QJ8Y5M7kcQ9K4i8LJ7Yj0M9Q1Z8W';
     const isMatch = user
       ? await bcrypt.compare(password, user.password)
       : await bcrypt.compare(password, dummyHash);
