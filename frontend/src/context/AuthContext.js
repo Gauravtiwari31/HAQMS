@@ -10,9 +10,10 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/a
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
-  // FIX: Start loading as false — the localStorage restore is synchronous-ish
-  // and we don't want to block the login button on page load
   const [loading, setLoading] = useState(false);
+  // FIX: Start as false — set to true only after localStorage restore completes.
+  // Components that depend on auth state should wait for authRestored = true
+  // before rendering protected content or redirecting.
   const [authRestored, setAuthRestored] = useState(false);
   const [error, setError] = useState(null);
   const router = useRouter();
@@ -33,6 +34,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('haqms_token');
       localStorage.removeItem('haqms_user');
     } finally {
+      // FIX: Always mark restore as complete, even on error, so the UI unblocks
       setAuthRestored(true);
     }
   }, []);
@@ -49,8 +51,11 @@ export const AuthProvider = ({ children }) => {
           body: JSON.stringify({ email, password }),
         });
       } catch (networkErr) {
-        // FIX: Provide a clear message when the backend is unreachable
-        throw new Error('Cannot reach the server. Please make sure the backend is running on port 5000.');
+        // FIX: Clear, actionable message when the backend is unreachable.
+        // Most common cause: backend not started, wrong port, or missing .env
+        throw new Error(
+          'Cannot reach the server. Please make sure the backend is running on port 5000.'
+        );
       }
 
       let data;
@@ -64,7 +69,7 @@ export const AuthProvider = ({ children }) => {
         throw new Error(data.error || 'Authentication failed');
       }
 
-      // FIX: Guard against unexpected response shape
+      // Guard against unexpected response shape
       if (!data.data || !data.data.token || !data.data.user) {
         throw new Error('Invalid response from server. Please try again.');
       }
@@ -114,6 +119,8 @@ export const AuthProvider = ({ children }) => {
         throw new Error(data.error || 'Registration failed');
       }
 
+      // FIX: Don't call setLoading(false) in finally here — login() will manage
+      // its own loading state after register succeeds
       return login(email, password);
     } catch (err) {
       setError(err.message);
@@ -133,6 +140,13 @@ export const AuthProvider = ({ children }) => {
   }, [router]);
 
   const clearError = useCallback(() => setError(null), []);
+
+  // FIX: Don't render children until auth state has been restored from localStorage.
+  // Without this guard, protected routes may redirect to /login on first load
+  // even when the user IS logged in — because user is null until the effect runs.
+  if (!authRestored) {
+    return null; // Or replace with a full-page spinner if you prefer
+  }
 
   return (
     <AuthContext.Provider
